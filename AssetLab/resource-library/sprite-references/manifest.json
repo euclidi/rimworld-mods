@@ -1,0 +1,524 @@
+{
+  "blender": "4.2.9 LTS",
+  "size_px": [
+    160,
+    160
+  ],
+  "models": {
+    "character-human": {
+      "source_sha256": "706775dc732c0485d37157a9f740c7edf83cf2e60fa0b484f267312819a8cb6d",
+      "timing": {
+        "idle": {
+          "source_duration_seconds": 1.333333,
+          "samples_per_direction": 1
+        },
+        "walk": {
+          "source_duration_seconds": 0.666667,
+          "samples_per_direction": 8
+        },
+        "sprint": {
+          "source_duration_seconds": 0.5,
+          "samples_per_direction": 8
+        }
+      },
+      "frames": [
+        {
+          "file": "character-human/idle/south_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-human/idle/east_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-human/idle/north_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-human/walk/south_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-human/walk/south_01.png",
+          "source_frame": 2.0
+        },
+        {
+          "file": "character-human/walk/south_02.png",
+          "source_frame": 4.0
+        },
+        {
+          "file": "character-human/walk/south_03.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-human/walk/south_04.png",
+          "source_frame": 8.0
+        },
+        {
+          "file": "character-human/walk/south_05.png",
+          "source_frame": 10.0
+        },
+        {
+          "file": "character-human/walk/south_06.png",
+          "source_frame": 12.0
+        },
+        {
+          "file": "character-human/walk/south_07.png",
+          "source_frame": 14.0
+        },
+        {
+          "file": "character-human/walk/east_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-human/walk/east_01.png",
+          "source_frame": 2.0
+        },
+        {
+          "file": "character-human/walk/east_02.png",
+          "source_frame": 4.0
+        },
+        {
+          "file": "character-human/walk/east_03.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-human/walk/east_04.png",
+          "source_frame": 8.0
+        },
+        {
+          "file": "character-human/walk/east_05.png",
+          "source_frame": 10.0
+        },
+        {
+          "file": "character-human/walk/east_06.png",
+          "source_frame": 12.0
+        },
+        {
+          "file": "character-human/walk/east_07.png",
+          "source_frame": 14.0
+        },
+        {
+          "file": "character-human/walk/north_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-human/walk/north_01.png",
+          "source_frame": 2.0
+        },
+        {
+          "file": "character-human/walk/north_02.png",
+          "source_frame": 4.0
+        },
+        {
+          "file": "character-human/walk/north_03.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-human/walk/north_04.png",
+          "source_frame": 8.0
+        },
+        {
+          "file": "character-human/walk/north_05.png",
+          "source_frame": 10.0
+        },
+        {
+          "file": "character-human/walk/north_06.png",
+          "source_frame": 12.0
+        },
+        {
+          "file": "character-human/walk/north_07.png",
+          "source_frame": 14.0
+        },
+        {
+          "file": "character-human/sprint/south_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-human/sprint/south_01.png",
+          "source_frame": 1.5
+        },
+        {
+          "file": "character-human/sprint/south_02.png",
+          "source_frame": 3.0
+        },
+        {
+          "file": "character-human/sprint/south_03.png",
+          "source_frame": 4.5
+        },
+        {
+          "file": "character-human/sprint/south_04.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-human/sprint/south_05.png",
+          "source_frame": 7.5
+        },
+        {
+          "file": "character-human/sprint/south_06.png",
+          "source_frame": 9.0
+        },
+        {
+          "file": "character-human/sprint/south_07.png",
+          "source_frame": 10.5
+        },
+        {
+          "file": "character-human/sprint/east_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-human/sprint/east_01.png",
+          "source_frame": 1.5
+        },
+        {
+          "file": "character-human/sprint/east_02.png",
+          "source_frame": 3.0
+        },
+        {
+          "file": "character-human/sprint/east_03.png",
+          "source_frame": 4.5
+        },
+        {
+          "file": "character-human/sprint/east_04.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-human/sprint/east_05.png",
+          "source_frame": 7.5
+        },
+        {
+          "file": "character-human/sprint/east_06.png",
+          "source_frame": 9.0
+        },
+        {
+          "file": "character-human/sprint/east_07.png",
+          "source_frame": 10.5
+        },
+        {
+          "file": "character-human/sprint/north_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-human/sprint/north_01.png",
+          "source_frame": 1.5
+        },
+        {
+          "file": "character-human/sprint/north_02.png",
+          "source_frame": 3.0
+        },
+        {
+          "file": "character-human/sprint/north_03.png",
+          "source_frame": 4.5
+        },
+        {
+          "file": "character-human/sprint/north_04.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-human/sprint/north_05.png",
+          "source_frame": 7.5
+        },
+        {
+          "file": "character-human/sprint/north_06.png",
+          "source_frame": 9.0
+        },
+        {
+          "file": "character-human/sprint/north_07.png",
+          "source_frame": 10.5
+        }
+      ]
+    },
+    "character-orc": {
+      "source_sha256": "554bc8e8ccc032ed24947a787362054f4887eafd7ea994a8b84f0a57165086ef",
+      "timing": {
+        "idle": {
+          "source_duration_seconds": 1.333333,
+          "samples_per_direction": 1
+        },
+        "walk": {
+          "source_duration_seconds": 0.666667,
+          "samples_per_direction": 8
+        },
+        "sprint": {
+          "source_duration_seconds": 0.5,
+          "samples_per_direction": 8
+        }
+      },
+      "frames": [
+        {
+          "file": "character-orc/idle/south_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-orc/idle/east_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-orc/idle/north_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-orc/walk/south_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-orc/walk/south_01.png",
+          "source_frame": 2.0
+        },
+        {
+          "file": "character-orc/walk/south_02.png",
+          "source_frame": 4.0
+        },
+        {
+          "file": "character-orc/walk/south_03.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-orc/walk/south_04.png",
+          "source_frame": 8.0
+        },
+        {
+          "file": "character-orc/walk/south_05.png",
+          "source_frame": 10.0
+        },
+        {
+          "file": "character-orc/walk/south_06.png",
+          "source_frame": 12.0
+        },
+        {
+          "file": "character-orc/walk/south_07.png",
+          "source_frame": 14.0
+        },
+        {
+          "file": "character-orc/walk/east_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-orc/walk/east_01.png",
+          "source_frame": 2.0
+        },
+        {
+          "file": "character-orc/walk/east_02.png",
+          "source_frame": 4.0
+        },
+        {
+          "file": "character-orc/walk/east_03.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-orc/walk/east_04.png",
+          "source_frame": 8.0
+        },
+        {
+          "file": "character-orc/walk/east_05.png",
+          "source_frame": 10.0
+        },
+        {
+          "file": "character-orc/walk/east_06.png",
+          "source_frame": 12.0
+        },
+        {
+          "file": "character-orc/walk/east_07.png",
+          "source_frame": 14.0
+        },
+        {
+          "file": "character-orc/walk/north_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-orc/walk/north_01.png",
+          "source_frame": 2.0
+        },
+        {
+          "file": "character-orc/walk/north_02.png",
+          "source_frame": 4.0
+        },
+        {
+          "file": "character-orc/walk/north_03.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-orc/walk/north_04.png",
+          "source_frame": 8.0
+        },
+        {
+          "file": "character-orc/walk/north_05.png",
+          "source_frame": 10.0
+        },
+        {
+          "file": "character-orc/walk/north_06.png",
+          "source_frame": 12.0
+        },
+        {
+          "file": "character-orc/walk/north_07.png",
+          "source_frame": 14.0
+        },
+        {
+          "file": "character-orc/sprint/south_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-orc/sprint/south_01.png",
+          "source_frame": 1.5
+        },
+        {
+          "file": "character-orc/sprint/south_02.png",
+          "source_frame": 3.0
+        },
+        {
+          "file": "character-orc/sprint/south_03.png",
+          "source_frame": 4.5
+        },
+        {
+          "file": "character-orc/sprint/south_04.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-orc/sprint/south_05.png",
+          "source_frame": 7.5
+        },
+        {
+          "file": "character-orc/sprint/south_06.png",
+          "source_frame": 9.0
+        },
+        {
+          "file": "character-orc/sprint/south_07.png",
+          "source_frame": 10.5
+        },
+        {
+          "file": "character-orc/sprint/east_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-orc/sprint/east_01.png",
+          "source_frame": 1.5
+        },
+        {
+          "file": "character-orc/sprint/east_02.png",
+          "source_frame": 3.0
+        },
+        {
+          "file": "character-orc/sprint/east_03.png",
+          "source_frame": 4.5
+        },
+        {
+          "file": "character-orc/sprint/east_04.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-orc/sprint/east_05.png",
+          "source_frame": 7.5
+        },
+        {
+          "file": "character-orc/sprint/east_06.png",
+          "source_frame": 9.0
+        },
+        {
+          "file": "character-orc/sprint/east_07.png",
+          "source_frame": 10.5
+        },
+        {
+          "file": "character-orc/sprint/north_00.png",
+          "source_frame": 0.0
+        },
+        {
+          "file": "character-orc/sprint/north_01.png",
+          "source_frame": 1.5
+        },
+        {
+          "file": "character-orc/sprint/north_02.png",
+          "source_frame": 3.0
+        },
+        {
+          "file": "character-orc/sprint/north_03.png",
+          "source_frame": 4.5
+        },
+        {
+          "file": "character-orc/sprint/north_04.png",
+          "source_frame": 6.0
+        },
+        {
+          "file": "character-orc/sprint/north_05.png",
+          "source_frame": 7.5
+        },
+        {
+          "file": "character-orc/sprint/north_06.png",
+          "source_frame": 9.0
+        },
+        {
+          "file": "character-orc/sprint/north_07.png",
+          "source_frame": 10.5
+        }
+      ]
+    },
+    "shield-round": {
+      "source_sha256": "35a10a80b7478a66be8bc1847b6376e09064a2745e1acf53eb031ac5ce649400",
+      "timing": {
+        "static": {
+          "source_duration_seconds": 0.0,
+          "samples_per_direction": 1
+        }
+      },
+      "frames": [
+        {
+          "file": "shield-round/static/south_00.png",
+          "source_frame": 1.0
+        },
+        {
+          "file": "shield-round/static/east_00.png",
+          "source_frame": 1.0
+        },
+        {
+          "file": "shield-round/static/north_00.png",
+          "source_frame": 1.0
+        }
+      ]
+    },
+    "weapon-spear": {
+      "source_sha256": "22a9d07d0abcf7bd72c9e464f023367a6b449de0ccffd929f724b341f4fab7ac",
+      "timing": {
+        "static": {
+          "source_duration_seconds": 0.0,
+          "samples_per_direction": 1
+        }
+      },
+      "frames": [
+        {
+          "file": "weapon-spear/static/south_00.png",
+          "source_frame": 1.0
+        },
+        {
+          "file": "weapon-spear/static/east_00.png",
+          "source_frame": 1.0
+        },
+        {
+          "file": "weapon-spear/static/north_00.png",
+          "source_frame": 1.0
+        }
+      ]
+    },
+    "weapon-sword": {
+      "source_sha256": "17ce43897fe2bbe0cdc22ecf0abfc3a9d213bb2893b626675fa116326512547a",
+      "timing": {
+        "static": {
+          "source_duration_seconds": 0.0,
+          "samples_per_direction": 1
+        }
+      },
+      "frames": [
+        {
+          "file": "weapon-sword/static/south_00.png",
+          "source_frame": 1.0
+        },
+        {
+          "file": "weapon-sword/static/east_00.png",
+          "source_frame": 1.0
+        },
+        {
+          "file": "weapon-sword/static/north_00.png",
+          "source_frame": 1.0
+        }
+      ]
+    }
+  }
+}

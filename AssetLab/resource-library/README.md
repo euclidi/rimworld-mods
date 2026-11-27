@@ -1,5 +1,7 @@
 # Reusable RimWorld modding resources
 
+- [Directional sprite references](sprite-references/README.md): transparent human and orc idle, walk, and sprint frames, three prop studies, and a Blender rebuild script.
+
 Development references for mod and art experiments; these are not installable mods and are not integrated into Orcish Hordes.
 
 - [Foundational 3D source material](foundations-3d/README.md): humanoid/orc models, animation clips, shields, and melee weapons for concept and sprite-reference work.
