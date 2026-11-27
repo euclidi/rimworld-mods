@@ -1,6 +1,6 @@
 # Euclidi RimWorld Mods
 
-Development workspace for independent RimWorld 1.7 (Waylith) mods. Base game only; no paid DLC required. The exact installed game build is not yet known.
+Development workspace for independent RimWorld 1.7 (Waylith) mods. Base game only; no paid DLC required. Local reference installation inspected: 1.7.5021 rev1365; compatibility remains subject to playtesting.
 
 - [Research](Research/README.md): technical sources and decisions.
 - [SDK](SDK/Directory.Build.props): pinned compilation defaults.
