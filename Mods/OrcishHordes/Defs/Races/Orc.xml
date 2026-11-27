@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <AlienRace.ThingDef_AlienRace ParentName="Human">
+    <defName>Euclidi_Orc</defName>
+    <label>orc</label>
+    <description>A green-skinned humanoid with prominent lower tusks.</description>
+    <alienRace>
+      <generalSettings>
+        <humanRecipeImport>true</humanRecipeImport>
+        <alienPartGenerator>
+          <headTypes Inherit="False"><li>Male_AverageNormal</li><li>Female_AverageNormal</li></headTypes>
+          <colorChannels Inherit="False">
+            <li><name>skin</name><first Class="ColorGenerator_Options"><options>
+              <li><weight>4</weight><only>RGBA(105, 130, 79, 255)</only></li>
+              <li><weight>3</weight><only>RGBA(77, 108, 65, 255)</only></li>
+              <li><weight>2</weight><only>RGBA(141, 151, 93, 255)</only></li>
+            </options></first><second Class="ColorGenerator_Single"><color>RGBA(255, 255, 255, 255)</color></second></li>
+          </colorChannels>
+          <bodyAddons>
+            <li>
+              <path>Euclidi/Orcs/Tusks</path>
+              <colorChannel>base</colorChannel>
+              <alignWithHead>true</alignWithHead>
+              <defaultOffset>Center</defaultOffset>
+              <inFrontOfBody>true</inFrontOfBody>
+              <drawSize>(1,1)</drawSize>
+              <userCustomizable>false</userCustomizable>
+              <offsets>
+                <south><offset>(0,0)</offset><layerOffset>0.01</layerOffset></south>
+                <east><offset>(0,0)</offset><layerOffset>0.01</layerOffset></east>
+                <north><offset>(0,0)</offset><layerOffset>0</layerOffset></north>
+              </offsets>
+              <conditions>
+                <BodyPart><bodyPart>Jaw</bodyPart></BodyPart>
+                <Apparel><hiddenUnderApparelFor><li>FullHead</li></hiddenUnderApparelFor></Apparel>
+              </conditions>
+            </li>
+          </bodyAddons>
+        </alienPartGenerator>
+      </generalSettings>
+    </alienRace>
+  </AlienRace.ThingDef_AlienRace>
+  <PawnKindDef ParentName="BasePlayerPawnKind">
+    <defName>Euclidi_OrcColonist</defName>
+    <label>orc colonist</label>
+    <race>Euclidi_Orc</race>
+    <defaultFactionType>PlayerColony</defaultFactionType>
+    <initialResistanceRange>13~21</initialResistanceRange>
+  </PawnKindDef>
+</Defs>
