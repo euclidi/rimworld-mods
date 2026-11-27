@@ -1,0 +1,21 @@
+<Project>
+
+  <!--
+    Shared StyleCop wiring for RimWorks mods. Import this from a repo's Directory.Build.props.
+    SA* severities live in the shared .editorconfig, not here.
+  -->
+
+  <PropertyGroup>
+    <!-- The analyzer reads stylecop.json from the project/solution dir. -->
+    <StyleCopRulesetEnabled>true</StyleCopRulesetEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.3.180.*" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" Condition="Exists('$(MSBuildThisFileDirectory)stylecop.json')" />
+  </ItemGroup>
+
+</Project>

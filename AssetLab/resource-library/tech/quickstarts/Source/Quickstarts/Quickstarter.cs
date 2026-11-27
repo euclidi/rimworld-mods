@@ -1,0 +1,429 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using RimWorks.Quickstarts.Patching;
+using RimWorks.Quickstarts.UI;
+using RimWorks.Quickstarts.Verification;
+using RimWorld;
+using RimWorld.Planet;
+using UnityEngine;
+using Verse;
+using Verse.Profile;
+
+namespace RimWorks.Quickstarts;
+
+/// <summary>
+/// Builds a game from a quickstart and drops the player into it. One instance owns one launch;
+/// relaunching replaces the instance.
+/// </summary>
+[StaticConstructorOnStartup]
+public class Quickstarter {
+  private static bool started;
+  private static bool finished;
+  private static bool seedHeld;
+
+  private readonly StatusBox? statusBox;
+
+  private string seedUsed = string.Empty;
+
+  static Quickstarter() {
+    Instance = new Quickstarter(ConfiguredQuickstart());
+
+    // A configured quickstart owns the launch, so the picker would be torn down a moment later.
+    if (Instance.Quickstart == null) {
+      VanillaQuicktest.ClaimCommandLineArg();
+    }
+  }
+
+  private Quickstarter(AbstractQuickstart? quickstart) {
+    Quickstart = quickstart;
+    if (quickstart == null) {
+      return;
+    }
+
+    statusBox = new StatusBox(this);
+
+    LongEventHandler.ExecuteWhenFinished(() => {
+      if (started) {
+        return;
+      }
+
+      // Idempotent. Static ctor order is undefined, so hooks may not be on when the box draws.
+      PatchBackends.ApplyBest();
+
+      finished = false;
+      started = true;
+      StartGame();
+      finished = true;
+    });
+  }
+
+  /// <summary>The launcher for the current run, or null before startup finishes.</summary>
+  public static Quickstarter? Instance { get; private set; }
+
+  /// <summary>What is being launched, or null when nothing is configured.</summary>
+  public AbstractQuickstart? Quickstart { get; }
+
+  /// <summary>Rebuilds the game from whatever the command line or settings currently name.</summary>
+  public static void ReloadQuickstart() {
+    Restart(ConfiguredQuickstart());
+  }
+
+  /// <summary>Starts a quickstart the player picked by hand, ignoring whatever the settings say.</summary>
+  /// <param name="quickstart">The quickstart to launch.</param>
+  public static void Launch(AbstractQuickstart quickstart) {
+    Restart(quickstart);
+  }
+
+  /// <summary>Draws the launch status box while the game is being built.</summary>
+  public void OnGUI() {
+    if (Watchdog.Expired()) {
+      TimeOut();
+      return;
+    }
+
+    if (Quickstart == null || finished) {
+      return;
+    }
+
+    statusBox?.OnGUI();
+  }
+
+  private static AbstractQuickstart? ConfiguredQuickstart() {
+    string? requested = QuickstartArgs.SelectedName;
+
+    if (!Prefs.DevMode) {
+      if (requested != null) {
+        Logger.Warn(
+            "-{Arg} was passed, but dev mode is off, so no quickstart will run.",
+            [QuickstartArgs.SelectArg]);
+      }
+
+      return null;
+    }
+
+    // A name that cannot resolve stops the launch instead of quietly booting a different colony.
+    Type? type = requested != null ? FromName(requested) : FromSettings();
+
+    return type == null ? null : QuickstartRegistry.Create(type);
+  }
+
+  private static Type? FromName(string requested) {
+    Type? type = QuickstartLookup.Resolve(requested, QuickstartRegistry.AllTypes, out string? error);
+    if (type == null) {
+      Logger.Error("-{Arg}: {Reason}", [QuickstartArgs.SelectArg, error]);
+      return null;
+    }
+
+    Logger.Info("Command line picked the {Quickstart} quickstart.", [type.Name]);
+    return type;
+  }
+
+  private static Type? FromSettings() {
+    string? name = QuickstartsMod.Settings.defaultQuickstart;
+    if (string.IsNullOrEmpty(name)) {
+      return null;
+    }
+
+    Type? type = QuickstartLookup.Resolve(name, QuickstartRegistry.AllTypes, out string? error);
+    if (type == null) {
+      Logger.Error("Default quickstart in mod settings: {Reason}", [error]);
+    }
+
+    return type;
+  }
+
+  private static void Restart(AbstractQuickstart? quickstart) {
+    LongEventHandler.QueueLongEvent(
+        () => {
+          ReleaseSeed();
+          Current.ProgramState = ProgramState.Entry;
+          Current.Game = null;
+          started = false;
+          Instance = new Quickstarter(quickstart);
+        },
+        "Quickstarts_Reload",
+        true,
+        GameAndMapInitExceptionHandlers.ErrorWhileGeneratingMap);
+  }
+
+  private static void RunVerification(AbstractQuickstart quickstart, string seed, int ticksRun) {
+    Watchdog.Stage = "verifying";
+    string name = quickstart.GetType().Name;
+    QuickstartVerification? verification = quickstart.Verify();
+
+    // Collected before the PASS/FAIL lines below: those go through Logger.Error and would
+    // otherwise count themselves.
+    LogSummary log = LogCapture.Collect();
+    int budgetErrors = log.CountAgainstBudget(quickstart.ignoredLogErrors);
+    bool logClean = !quickstart.failOnLogError
+        || (log.CaptureLive && !log.Truncated && budgetErrors <= quickstart.allowedLogErrors);
+    string? logDetail = logClean ? null : DescribeLogFailure(log, budgetErrors, quickstart.allowedLogErrors);
+    AssertResult? logCheck = quickstart.failOnLogError
+        ? new AssertResult("no log errors", logClean, logDetail)
+        : BlindNotice(log);
+
+    if (log.Errors.Count > 0) {
+      Logger.Warn(
+          "The game logged {Errors} errors during the run ({Counted} against a budget of"
+          + " {Budget}), plus {Warnings} warnings.",
+          [
+            log.Errors.Count, budgetErrors, quickstart.allowedLogErrors, log.Warnings,
+          ]);
+    }
+
+    if (verification == null) {
+      Logger.Info(
+          "Verify mode requested but '{Quickstart}' has no Verify().",
+          [name]);
+      VerificationReport.Write(name, seed, ticksRun, null, log, logClean);
+      JUnitReport.Write(name, null, log, logCheck, null);
+      Exit(logClean ? 0 : 1);
+      return;
+    }
+
+    bool passed = verification.AllPassed && logClean;
+    LogResults(verification);
+
+    Logger.Info(
+        "Verification {Outcome} for '{Quickstart}'.",
+        [passed ? "PASSED" : "FAILED", name]);
+    VerificationReport.Write(name, seed, ticksRun, verification, log, passed);
+    JUnitReport.Write(name, verification, log, logCheck, null);
+    Exit(passed ? 0 : 1);
+  }
+
+  // Reading part of the log is not reading it, so both gaps fail on their own terms.
+  private static string DescribeLogFailure(LogSummary log, int budgetErrors, int allowed) {
+    if (!log.CaptureLive) {
+      return "log capture was blind, so a clean run cannot be proven";
+    }
+
+    if (log.Truncated) {
+      return "the log ring overflowed, so dropped errors cannot be ruled out";
+    }
+
+    return $"{budgetErrors} errors, budget {allowed}";
+  }
+
+  // Opting out of the log check does not hide that the log was unreadable, so CI still sees it.
+  private static AssertResult? BlindNotice(LogSummary log) {
+    if (log.CaptureLive && !log.Truncated) {
+      return null;
+    }
+
+    string why = log.CaptureLive ? "the log ring overflowed" : "capture was blind";
+    return new AssertResult(
+        "log capture complete", true, $"{why}; log errors were not checked");
+  }
+
+  private static void LogResults(QuickstartVerification verification) {
+    for (int i = 0; i < verification.Results.Count; i++) {
+      AssertResult result = verification.Results[i];
+      string line = $"  {(result.Passed ? "PASS" : "FAIL")} {result.Label}";
+      if (!result.Passed && result.Detail != null) {
+        line += " -- " + result.Detail;
+      }
+
+      if (result.Passed) {
+        Logger.Info(line);
+      } else {
+        Logger.Error(line);
+      }
+    }
+  }
+
+  private static void Exit(int code) {
+    Logger.Info("Exiting with code {Code}.", [code]);
+
+    // Application.Quit, not Environment.Exit: an AppDomain unload from a Unity callback hangs.
+    Application.Quit(code);
+  }
+
+  // Held across the generation long events. Root.Update only calls EnsureStateStackEmpty when no
+  // long event is pending, so the state survives until the pop event runs.
+  private static void HoldSeed(int seed) {
+    // PushState, not Rand.Seed: the bare setter logs a red error when the state stack is empty.
+    Rand.PushState(seed);
+    seedHeld = true;
+  }
+
+  private static void ReleaseSeed() {
+    if (!seedHeld) {
+      return;
+    }
+
+    seedHeld = false;
+    Rand.PopState();
+  }
+
+  private static int RunTicks(int count) {
+    if (count <= 0) {
+      return 0;
+    }
+
+    Watchdog.Stage = "ticking";
+    TickManager ticks = Find.TickManager;
+    int start = ticks.TicksGame;
+
+    // DoSingleTick reads neither Paused nor CurTimeSpeed, so a red error cannot stall the loop.
+    for (int i = 0; i < count; i++) {
+      ticks.DoSingleTick();
+    }
+
+    // Counted, not assumed: DebugSettings.fastEcology advances 2000 ticks per call.
+    int ran = ticks.TicksGame - start;
+    Logger.Info("Ran {Ticks} ticks before verifying.", [ran]);
+    return ran;
+  }
+
+  private void TimeOut() {
+    string name = Quickstart?.GetType().Name ?? "none";
+
+    // Collected first so the timeout line below does not land in its own report.
+    LogSummary log = LogCapture.Collect();
+
+    Logger.Error(
+        "'{Quickstart}' timed out after {Seconds}s during {Stage}.",
+        [name, QuickstartArgs.TimeoutSeconds, Watchdog.Stage]);
+    VerificationReport.Write(name, seedUsed, 0, null, log, false, Watchdog.Stage);
+    JUnitReport.Write(name, null, log, null, Watchdog.Stage);
+    Exit(2);
+  }
+
+  private void StartGame() {
+    seedUsed = SeedResolver.Resolve(QuickstartArgs.Seed, Quickstart!.seed) ?? GenText.RandomSeedString();
+    Logger.Info(
+        "Launching '{Quickstart}' with world seed {Seed}.",
+        [Quickstart.GetType().Name, seedUsed]);
+
+    // Armed before generation so load-time errors stay out of the run's count. Verify mode only:
+    // clearing the log under an interactive launch would throw away what you were reading.
+    if (QuickstartArgs.VerifyMode) {
+      LogCapture.Arm();
+      Watchdog.Arm(QuickstartArgs.TimeoutSeconds);
+    }
+
+    LongEventHandler.QueueLongEvent(
+        () => {
+          MemoryUtility.ClearAllMapsAndWorld();
+          HoldSeed(GenText.StableStringHash(seedUsed));
+
+          try {
+            ApplyConfiguration();
+            Watchdog.Stage = "generating-map";
+            PageUtility.InitGameStart();
+          } catch {
+            ReleaseSeed();
+            throw;
+          }
+
+          // The queue is FIFO, so this pops after the map generation InitGameStart just queued.
+          LongEventHandler.QueueLongEvent(ReleaseSeed, "Quickstarts_SeedRelease", false, null);
+
+          // Half a second, not zero: pawns finish spawning over the first few ticks.
+          DelayedActionScheduler.Schedule(OnLoaded, GenTicks.TicksPerRealSecond / 2);
+        },
+        "Quickstarts_StartGame",
+        true,
+        GameAndMapInitExceptionHandlers.ErrorWhileGeneratingMap);
+
+    Quickstart.PostStart();
+  }
+
+  private void ApplyConfiguration() {
+    Watchdog.Stage = "configuring";
+    AbstractQuickstart quickstart = Quickstart!;
+
+    Current.ProgramState = ProgramState.Entry;
+    Current.Game = new Game {
+      InitData = new GameInitData(),
+      Scenario = quickstart.scenario.scenario,
+    };
+    Find.Scenario.PreConfigure();
+    Current.Game.storyteller = new Storyteller(quickstart.storyteller, quickstart.difficulty);
+
+    quickstart.PreGenerateWorld();
+
+    Watchdog.Stage = "generating-world";
+#if RW_1_5
+    // 1.5's GenerateWorld has no LandmarkDensity parameter
+    Current.Game.World = WorldGenerator.GenerateWorld(
+        quickstart.planetCoverage,
+        seedUsed,
+        OverallRainfall.Normal,
+        OverallTemperature.Normal,
+        OverallPopulation.Normal);
+#else
+    Current.Game.World = WorldGenerator.GenerateWorld(
+        quickstart.planetCoverage,
+        seedUsed,
+        OverallRainfall.Normal,
+        OverallTemperature.Normal,
+        OverallPopulation.Normal,
+        LandmarkDensity.Normal);
+#endif
+
+    // The seed state StartGame pushed is still held here, so the tile is fixed too.
+    Find.GameInitData.ChooseRandomStartingTile();
+
+    Logger.Info(
+        "Seed {Seed} picked starting tile {Tile}.",
+        [seedUsed, Find.GameInitData.startingTile]);
+
+    Find.GameInitData.mapSize = quickstart.mapSize;
+    quickstart.PostApplyConfiguration();
+
+    Find.Scenario.PostIdeoChosen();
+
+    // After PostIdeoChosen: the scenario's own setup runs in there and would undo this.
+    quickstart.PostConfigured();
+  }
+
+  private void OnLoaded() {
+    // Backstop: the queued pop never runs if map generation threw.
+    ReleaseSeed();
+
+    AbstractQuickstart quickstart = Quickstart!;
+
+    try {
+      List<Pawn> pawns = [.. Find.World.PlayerPawnsForStoryteller.Where(p => p is { Spawned: true, Map: not null, story: not null, needs: not null })];
+
+      // An empty list means PrepareColonists silently does nothing and the run still looks fine.
+      if (pawns.Count == 0) {
+        Logger.Warn(
+            "No colonists passed the readiness filter. World has {WorldPawns} player pawns;"
+            + " map has {SpawnedColonists} spawned colonists.",
+            [
+              Find.World.PlayerPawnsForStoryteller.Count(),
+              Find.CurrentMap?.mapPawns?.FreeColonistsSpawnedCount ?? -1,
+            ]);
+      }
+
+      // Counted before the handoff: a quickstart may drain the list, so Count reads zero after.
+      int count = pawns.Count;
+      string names = string.Join(", ", pawns.Select(p => p.LabelShort));
+      quickstart.PrepareColonists(pawns);
+      quickstart.PostLoaded();
+
+      if (quickstart.pauseAfterLoad) {
+        Find.TickManager.Pause();
+      }
+
+      Logger.Info(
+          "Loaded '{Quickstart}' with {Colonists} colonists: {Names}.",
+          [quickstart.GetType().Name, count, names]);
+    } catch (Exception ex) {
+      Logger.Error(ex, "Post-load setup failed");
+    }
+
+    if (QuickstartArgs.VerifyMode) {
+      // Queued, not called: OnLoaded runs inside a tick, and DoSingleTick cannot nest.
+      LongEventHandler.QueueLongEvent(
+          () => RunVerification(quickstart, seedUsed, RunTicks(quickstart.ticksBeforeVerify)),
+          "Quickstarts_Verify",
+          false,
+          null);
+    }
+  }
+}
