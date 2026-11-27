@@ -15,7 +15,7 @@ python -m pip install Pillow
 python Tools/compare_orc_heads.py --game 'D:\Program Files (x86)\Steam\steamapps\common\RimWorld' --dotnet 'C:\Users\jvriv\AppData\Local\RimMed\dotnet\dotnet.exe' --output "$env:TEMP\orc-comparison.png"
 ```
 
-The tool invokes the installed game's `Waylith.dll` to join its split DDS streams and makes a **private** 128-pixel-per-cell composite outside the repository. Do not upload or redistribute it. The inspected average male/female south, east, north and mirrored west images place the original south tusks at the jaw edges, the east/west tusk near the face, and north is transparent. The result is an image-space comparison only: no tint, hair, apparel, render-tree scaling, actual game resolution or placement is simulated. Other inherited head shapes have not been individually registered; do not infer verified alignment. No overlay was changed without transform evidence.
+The tool invokes the installed game's `Waylith.dll` to join its split DDS streams and makes a **private** 128-pixel-per-cell composite outside the repository. Do not upload or redistribute it. The inspected average male/female south, east, north and mirrored west images place the original south tusks at the jaw edges, the east/west tusk near the face, and north is transparent. The result is an image-space comparison only: no tint, hair, apparel, render-tree scaling, actual game resolution or placement is simulated. Other inherited head shapes have not been individually registered; do not infer verified alignment. The south and side overlays were revised into slimmer, softly shaded tusks after inspecting the composite; runtime scale and alignment still require verification.
 
 ## Requirement map and outstanding work
 
@@ -24,3 +24,4 @@ The tool invokes the installed game's `Waylith.dll` to join its split DDS stream
 - REQ-03: `Defs/Races/Orc.xml` restores inherited heads, bodies, and hair and retains the original green channel and original tusks. Alignment for all head types and actual runtime remains unverified.
 - REQ-04: `Tools/pipeline.py`, its unit tests, `DevelopmentProbe.csproj`, and ZIP checks are the offline pipeline; see PR for observed results and CI. Core + HAR runtime tests remain pending.
 - REQ-05: This remains a visual pilot, not faction or gameplay implementation. Use `TestLab/Orc-visual.md` for a disposable-colony test.
+
