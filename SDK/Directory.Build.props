@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RimWorldReferenceVersion>1.7.5014-unstable</RimWorldReferenceVersion>
+    <Deterministic>true</Deterministic>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="$(RimWorldReferenceVersion)" PrivateAssets="all" ExcludeAssets="runtime" />
+  </ItemGroup>
+</Project>

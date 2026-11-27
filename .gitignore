@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/Assemblies/*.dll
+**/Assemblies/*.pdb
+**/__pycache__/
+dist/
+*.user
+*.suo
+.vs/
+.idea/

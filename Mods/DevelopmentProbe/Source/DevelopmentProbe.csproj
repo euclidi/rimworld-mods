@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../../SDK/Directory.Build.props" />
+  <PropertyGroup>
+    <AssemblyName>Euclidi.DevelopmentProbe</AssemblyName>
+    <OutputPath>../Assemblies/</OutputPath>
+  </PropertyGroup>
+</Project>

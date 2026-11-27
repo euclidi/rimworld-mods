@@ -1,0 +1,31 @@
+name: RimWorld 1.7 validation
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: python -m unittest discover -s Tools/tests
+      - run: python Tools/pipeline.py check --source-only
+      - name: Compile all mod projects
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' project; do
+            dotnet build "$project" -c Release
+          done < <(find Mods -path '*/Source/*' -name '*.csproj' -print0)
+      - run: python Tools/pipeline.py check
+      - run: python Tools/pipeline.py package
+      - uses: actions/upload-artifact@v4
+        with:
+          name: development-mod-zips
+          path: dist/*.zip
+          if-no-files-found: error
